@@ -19,7 +19,7 @@ body {
 }
 
 #map {
-    height: 100vh;
+    height: 100%;
 }
 
 .gm-style-cc { display:none; }
@@ -33,11 +33,11 @@ body {
     grid-template-columns: repeat(10, 10% [col-start]);
     grid-template-rows: repeat(10, 10% [row-start]);
     background-color: #F9FBFA;
-    opacity: 80%;
+    /* opacity: 80%; */
 }
 
 #info-window {
-    position: relative;
+    /* position: relative; */
     height: 20%;
     width: 100%;
     grid-column-start: 2;
@@ -49,6 +49,7 @@ body {
 #bin-img {
     max-width: 40%;
     height: auto;
+    display: block;
 }
 
 .btn-circle {
@@ -63,3 +64,13 @@ body {
     text-align: center;
     cursor: pointer;
 }
+
+#scanner-wrapper {
+    height: 480px;
+    position: relative;
+    overflow: hidden;
+  }  
+   
+  #canvas {
+    position: absolute;
+  }

@@ -128,10 +128,10 @@ function initMap() {
             map,
             animation: google.maps.Animation.DROP,
         });
-        google.maps.event.addListener(marker, 'click', function() {
-            $('#content').css('display', 'grid');
-            $('#bin-capacity').css('width', `${this.currentCapacity*100/this.maxCapacity}%`)
-            $('#bin-capacity').text(`${this.currentCapacity*100/this.maxCapacity}%`)
+        google.maps.event.addListener(marker, 'click', function () {
+            $('#content').css('display', 'block');
+            $('#bin-capacity').css('width', `${this.currentCapacity * 100 / this.maxCapacity}%`)
+            $('#bin-capacity').text(`${this.currentCapacity * 100 / this.maxCapacity}%`)
             $('#bin-img').attr('src', this.imgUrl)
             $('#bin-info').text(binDict[this.type].info)
         });
@@ -235,3 +235,83 @@ function CenterControl(controlDiv, map) {
 $('#content-close').click(() => {
     $('#content').css('display', 'none');
 })
+
+// Get the video & canvas elements
+const video = document.querySelector('#qr-video')
+const canvas = document.querySelector('#canvas');
+let videoStream = null;
+// Check if device has camera
+if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    // Use video without audio
+    const constraints = {
+        video: {
+            facingMode: 'environment',
+        },
+        audio: false
+    }
+
+    // Start video stream
+    navigator.mediaDevices.getUserMedia(constraints).then(stream => {
+        video.srcObject = stream;
+        videoStream = stream;
+    });
+}
+
+// Create new barcode detector
+const barcodeDetector = new BarcodeDetector({ formats: ['qr_code'] });
+
+// Detect code function 
+const detectCode = () => {
+    // Start detecting codes on to the video element
+    barcodeDetector.detect(video).then(codes => {
+        // If no codes exit function
+        if (codes.length === 0) return;
+
+        for (const barcode of codes) {
+            // Log the barcode to the console
+            console.log(barcode)
+            drawCodePath(barcode);
+            videoStream.getTracks().forEach(function(track) {
+                track.stop();
+              });
+        }
+    }).catch(err => {
+        // Log an error if one happens
+        console.error(err);
+    })
+}
+
+// Run detect code function every 100 milliseconds
+setInterval(detectCode, 100);
+
+const drawCodePath = ({cornerPoints}) => {
+    const ctx = canvas.getContext('2d');
+    const strokeGradient = ctx.createLinearGradient(0, 0, canvas.scrollWidth, canvas.scrollHeight);
+  
+    // Exit function and clear canvas if no corner points
+    if (!cornerPoints) return ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+    // Clear canvas for new redraw
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+    // Create new gradient
+    strokeGradient.addColorStop('0', '#c471ed');
+    strokeGradient.addColorStop('1', '#f7797d');
+  
+    // Define stoke styles
+    ctx.strokeStyle = strokeGradient;
+    ctx.lineWidth = 4;
+
+    ctx.beginPath()
+    for (const [i, { x, y }] of cornerPoints.entries()) {
+        if (i === 0) {
+            // Move to starting position first corner
+            ctx.moveTo(x, y)
+            continue
+        }
+        // Draw line from current pos to x, y
+        ctx.lineTo(x, y)
+    }
+    ctx.closePath()
+    ctx.stroke();
+}
