@@ -206,7 +206,7 @@ function startCamera() {
 }
 
 $('#start-qr').click(() => {
-    $('#camera-wrapper').css('display', block);
+    $('#camera-wrapper').css('display', 'block');
     // startCamera();
     // startQRScan();
 });
@@ -216,7 +216,7 @@ function stopQRScan() {
         clearInterval(qrScannerInterval);
     }
     stopCamera();
-    $('#camera-wrapper').css('display', none);
+    $('#camera-wrapper').css('display', 'none');
 }
 
 function stopCamera() {
