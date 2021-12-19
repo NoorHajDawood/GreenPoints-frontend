@@ -11,7 +11,12 @@
 // failed.", it means you probably did not give permission for the browser to
 // locate you.
 let map, infoWindow;
-
+const video = document.querySelector('#video');
+const canvas = document.querySelector('#canvas');
+let videoStream = null;
+let qrScannerInterval = null;
+const panBtn = document.querySelector('#pan-btn');
+const plusBtn = document.querySelector('#plus-btn');
 function initMap() {
     map = new google.maps.Map(document.getElementById("map"), {
         center: { lat: 32.089433, lng: 34.80363 },
@@ -146,42 +151,19 @@ function initMap() {
     // Add a marker clusterer to manage the markers.
     const markerCluster = new markerClusterer.MarkerClusterer({ map, markers: binsMarkers });
 
-    // const centerControlDiv = document.createElement("div");
-    // CenterControl(centerControlDiv, map);
-    // map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(centerControlDiv);
-    const plusControlDiv = document.createElement('div');
-    $(plusControlDiv).addClass('btn-circle');
-    $(plusControlDiv).text('+');
-    $(plusControlDiv).css('margin', '0.5rem');
-    map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(plusControlDiv);
+    // const plusControlDiv = document.createElement('div');
+    // $(plusControlDiv).addClass('btn-circle');
+    // $(plusControlDiv).text('+');
+    // $(plusControlDiv).css('margin', '0.5rem');
+    // map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(plusControlDiv);
 
-    const panControlDiv = document.createElement('div');
-    $(panControlDiv).addClass('btn-circle');
-    $(panControlDiv).text('📍');
-    $(panControlDiv).css('margin', '0.5rem 0.5rem 0');
-    map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(panControlDiv);
-    panControlDiv.classList.add("custom-map-control-button");
-    panControlDiv.addEventListener("click", () => {
-        // Try HTML5 geolocation.
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const pos = {
-                        lat: position.coords.latitude,
-                        lng: position.coords.longitude,
-                    };
-                    map.setCenter(pos);
-                    locationMarker.position = pos;
-                },
-                () => {
-                    handleLocationError(true, infoWindow, map.getCenter());
-                }
-            );
-        } else {
-            // Browser doesn't support Geolocation
-            handleLocationError(false, infoWindow, map.getCenter());
-        }
-    });
+    // const panControlDiv = document.createElement('div');
+    // $(panControlDiv).addClass('btn-circle');
+    // $(panControlDiv).text('📍');
+    // $(panControlDiv).css('margin', '0.5rem 0.5rem 0');
+    // map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(panControlDiv);
+    // panControlDiv.classList.add("custom-map-control-button");
+    // 
 }
 
 function handleLocationError(browserHasGeolocation, infoWindow, pos) {
@@ -192,115 +174,104 @@ function handleLocationError(browserHasGeolocation, infoWindow, pos) {
     //         : "Error: Your browser doesn't support geolocation."
     // );
     // infoWindow.open(map);
-    alert( browserHasGeolocation
+    alert(browserHasGeolocation
         ? "Error: The Geolocation service failed."
         : "Error: Your browser doesn't support geolocation.");
 }
 
-/**
- * The CenterControl adds a control to the map that recenters the map on
- * Chicago.
- * This constructor takes the control DIV as an argument.
- * @constructor
- */
-function CenterControl(controlDiv, map) {
-    // Set CSS for the control border.
-    const controlUI = document.createElement("div");
 
-    controlUI.style.backgroundColor = "#fff";
-    controlUI.style.border = "2px solid #fff";
-    controlUI.style.borderRadius = "3px";
-    controlUI.style.boxShadow = "0 2px 6px rgba(0,0,0,.3)";
-    controlUI.style.cursor = "pointer";
-    controlUI.style.marginTop = "8px";
-    controlUI.style.marginBottom = "22px";
-    controlUI.style.textAlign = "center";
-    controlUI.title = "Click to recenter the map";
-    controlDiv.appendChild(controlUI);
-
-    // Set CSS for the control interior.
-    const controlText = document.createElement("div");
-
-    controlText.style.color = "rgb(25,25,25)";
-    controlText.style.fontFamily = "Roboto,Arial,sans-serif";
-    controlText.style.fontSize = "16px";
-    controlText.style.lineHeight = "38px";
-    controlText.style.paddingLeft = "5px";
-    controlText.style.paddingRight = "5px";
-    controlText.innerHTML = "Center Map";
-    controlUI.appendChild(controlText);
-    // Setup the click event listeners: simply set the map to Chicago.
-    controlUI.addEventListener("click", () => {
-        map.setCenter(chicago);
-    });
-}
 
 $('#content-close').click(() => {
     $('#content').css('display', 'none');
 })
 
-// Get the video & canvas elements
-const video = document.querySelector('#qr-video')
-const canvas = document.querySelector('#canvas');
-let videoStream = null;
-// Check if device has camera
-if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-    // Use video without audio
-    const constraints = {
-        video: {
-            facingMode: 'environment',
-        },
-        audio: false
-    }
 
-    // Start video stream
-    navigator.mediaDevices.getUserMedia(constraints).then(stream => {
-        video.srcObject = stream;
-        videoStream = stream;
+function startCamera() {
+    // Check if device has camera
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        // Use video without audio
+        const constraints = {
+            video: {
+                facingMode: 'environment',
+            },
+            audio: false
+        }
+
+        // Start video stream
+        navigator.mediaDevices.getUserMedia(constraints).then(stream => {
+            video.srcObject = stream;
+            videoStream = stream;
+        });
+    }
+}
+
+$('#start-qr').click(() => {
+    $('#camera-wrapper').css('display', block);
+    // startCamera();
+    // startQRScan();
+});
+
+function stopQRScan() {
+    if (qrScannerInterval) {
+        clearInterval(qrScannerInterval);
+    }
+    stopCamera();
+    $('#camera-wrapper').css('display', none);
+}
+
+function stopCamera() {
+    videoStream.getTracks().forEach(function (track) {
+        track.stop();
     });
 }
 
-// Create new barcode detector
-const barcodeDetector = new BarcodeDetector({ formats: ['qr_code'] });
+function startQRScan() {
+    if ('BarcodeDetector' in window) {
+        // Create new barcode detector
+        const barcodeDetector = new BarcodeDetector({ formats: ['qr_code'] });
+        // Detect code function 
+        const detectCode = () => {
+            // Start detecting codes on to the video element
+            barcodeDetector.detect(video).then(codes => {
+                // If no codes exit function
+                if (codes.length === 0) return;
 
-// Detect code function 
-const detectCode = () => {
-    // Start detecting codes on to the video element
-    barcodeDetector.detect(video).then(codes => {
-        // If no codes exit function
-        if (codes.length === 0) return;
-
-        for (const barcode of codes) {
-            // Log the barcode to the console
-            console.log(barcode)
-            drawCodePath(barcode);
-            videoStream.getTracks().forEach(function(track) {
-                track.stop();
-              });
+                for (const barcode of codes) {
+                    // Log the barcode to the console
+                    console.log(barcode);
+                    drawCodePath(barcode);
+                    $('#recycle-bin-id').text(barcode.rawValue);
+                    stopQRScan();
+                    // alert(JSON.stringify(barcode.cornerPoints))
+                    // videoStream.getTracks().forEach(function(track) {
+                    //     track.stop();
+                    //   });
+                }
+            }).catch(err => {
+                // Log an error if one happens
+                console.error(err);
+            })
         }
-    }).catch(err => {
-        // Log an error if one happens
-        console.error(err);
-    })
+
+        // Run detect code function every 100 milliseconds
+        qrScannerInterval = setInterval(detectCode, 100);
+    }
 }
 
-// Run detect code function every 100 milliseconds
-setInterval(detectCode, 100);
-
-const drawCodePath = ({cornerPoints}) => {
+function drawCodePath({ cornerPoints }) {
     const ctx = canvas.getContext('2d');
     const strokeGradient = ctx.createLinearGradient(0, 0, canvas.scrollWidth, canvas.scrollHeight);
-  
+
     // Exit function and clear canvas if no corner points
     if (!cornerPoints) return ctx.clearRect(0, 0, canvas.width, canvas.height);
-  
+
     // Clear canvas for new redraw
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-  
+
     // Create new gradient
     strokeGradient.addColorStop('0', '#c471ed');
     strokeGradient.addColorStop('1', '#f7797d');
-  
+
     // Define stoke styles
     ctx.strokeStyle = strokeGradient;
     ctx.lineWidth = 4;
@@ -318,3 +289,29 @@ const drawCodePath = ({cornerPoints}) => {
     ctx.closePath()
     ctx.stroke();
 }
+
+panBtn.addEventListener("click", () => {
+    // Try HTML5 geolocation.
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const pos = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude,
+                };
+                map.setCenter(pos);
+                locationMarker.position = pos;
+            },
+            () => {
+                handleLocationError(true, infoWindow, map.getCenter());
+            }
+        );
+    } else {
+        // Browser doesn't support Geolocation
+        handleLocationError(false, infoWindow, map.getCenter());
+    }
+});
+
+plusBtn.addEventListener("click", () => {
+    $('#submit-wrapper').show();
+})

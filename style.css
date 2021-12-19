@@ -54,9 +54,9 @@ body {
 
 .btn-circle {
     height: 60px;
-    line-height: 60px;  
+    line-height: 65px;  
     width: 60px;  
-    font-size: 4em;
+    font-size: 3em;
     font-weight: bold;
     border-radius: 50%;
     background-color: #1D1F20;
@@ -65,12 +65,62 @@ body {
     cursor: pointer;
 }
 
-#scanner-wrapper {
-    height: 480px;
-    position: relative;
-    overflow: hidden;
-  }  
-   
-  #canvas {
+#plus-btn {
     position: absolute;
-  }
+    right: 5px;
+    bottom: 5px;
+    z-index: 1;
+}
+
+#pan-btn {
+    position: absolute;
+    right: 5px;
+    bottom: 70px;
+    z-index: 1;
+    background-image: url(./images/icons/location.png);
+    background-position: center;
+    background-size: cover;
+}
+
+#submit-wrapper, #camera-wrapper {
+    height: 100vh;
+    width: 100vw;
+    position: absolute;
+    overflow: hidden;
+    display: none;
+}  
+#submit-wrapper {
+    z-index: 2;
+    background-color: #F9FBFA;
+    
+}
+#camera-wrapper {
+    z-index: 5;
+    background-color: #1D1F20;
+}
+
+#canvas {
+    position: absolute;
+}
+
+#video {
+    width: auto;
+    height: auto;
+}
+
+/* #start-camera{
+    align-self: flex-end;
+    justify-self: center;
+    right: 0.5rem;
+    bottom: 0.5rem;
+    z-index: 6;
+} */
+
+/* #start-qr {
+    align-self: flex-end;
+    justify-self: center;
+    right: 0.5rem;
+    bottom: 0.5rem;
+    z-index: 6;
+    display: none;
+} */

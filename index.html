@@ -24,10 +24,36 @@
 </head>
 
 <body>
-    <div id="scanner-wrapper">
-        <canvas id="canvas" width="640" height="480"></canvas>
-        <video id="qr-video" width="auto" height="auto" autoplay></video>
+    <div id="submit-wrapper">
+
+        <div class="input-group-prepend">
+            <input type="radio" class="btn-check" name="options" id="option1" autocomplete="off">
+            <label class="btn btn-secondary" for="option1">Plastic</label>
+
+            <input type="radio" class="btn-check" name="options" id="option2" autocomplete="off">
+            <label class="btn btn-secondary" for="option2">Glass</label>
+
+            <input type="radio" class="btn-check" name="options" id="option3" autocomplete="off">
+            <label class="btn btn-secondary" for="option3">Paper</label>
+
+            <input type="radio" class="btn-check" name="options" id="option4" autocomplete="off">
+            <label class="btn btn-secondary" for="option4">Can</label>
+            <input type="radio" class="btn-check" name="options" id="option5" autocomplete="off">
+            <label class="btn btn-secondary" for="option4">Other</label>
+        </div>
+        <input type="number" max="100" class="form-control" placeholder="amount" aria-label="" aria-describedby="basic-addon1">
+        <button id="start-qr" type="button" class="btn btn-secondary">Scan QR Code</button>
+        <button id="start-camera" type="button" class="btn btn-secondary">Take a Picture</button>
+        <input id="recycle-bin-id" type="text" class="form-control" placeholder="scan QR code for bin id" disabled>
+        <div id="camera-wrapper">
+            <canvas id="canvas" width="640" height="480"></canvas>
+            <video id="video" autoplay></video>
+            <button id="capture-btn" class="btn-circle"></button>
+        </div>
+        <!-- <button id="start-camera" class="btn-circle"></button> -->
+        <!-- <button id="start-qr">Scan QR Code</button> -->
     </div>
+
     <div id="content">
         <button id="content-close" type="button" class="btn-close" aria-label="Close"></button>
         <div id="info-window">
@@ -38,8 +64,10 @@
             <div id="bin-info"></div>
             <img id="bin-img" src="" alt="recycle bin preview">
         </div>
-        
+
     </div>
+    <div id="plus-btn" class="btn-circle">+</div>
+    <div id="pan-btn" class="btn-circle"></div>
 
     <div id="map"></div>
 
