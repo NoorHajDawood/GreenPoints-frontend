@@ -15,8 +15,18 @@ const video = document.querySelector('#video');
 const canvas = document.querySelector('#canvas');
 let videoStream = null;
 let qrScannerInterval = null;
+let locationMarker;
 const panBtn = document.querySelector('#pan-btn');
 const plusBtn = document.querySelector('#plus-btn');
+const cameraOutput = document.querySelector('#camera-output');
+const cameraPhoto = document.querySelector('#camera-photo');
+const deletePhoto = document.querySelector('#delete-photo');
+const captureButton = document.querySelector('#capture-btn');
+const photoCanvas = document.querySelector('#photo-canvas');
+let width = 320;    // We will scale the photo width to this
+let height = 0;     // This will be computed based on the input stream
+let streaming = false;
+
 function initMap() {
     map = new google.maps.Map(document.getElementById("map"), {
         center: { lat: 32.089433, lng: 34.80363 },
@@ -111,7 +121,7 @@ function initMap() {
     ];
 
     // Create markers.
-    const locationMarker = new google.maps.Marker({
+    locationMarker = new google.maps.Marker({
         position: { lat: 32.089433, lng: 34.80363 },
         icon: binDict['location'].icon,
         title: "Current location",
@@ -182,7 +192,11 @@ function handleLocationError(browserHasGeolocation, infoWindow, pos) {
 
 
 $('#content-close').click(() => {
-    $('#content').css('display', 'none');
+    $('#content').hide();
+    $('#submit-wrapper').hide();
+    $('#camera-wrapper').hide();
+    $(captureButton).hide();
+    stopCamera();
 })
 
 
@@ -203,12 +217,36 @@ function startCamera() {
             videoStream = stream;
         });
     }
+    video.addEventListener('canplay', function(ev){
+        if (!streaming) {
+          height = video.videoHeight / (video.videoWidth/width);
+        
+          // Firefox currently has a bug where the height can't be read from
+          // the video, so we will make assumptions if this happens.
+        
+          if (isNaN(height)) {
+            height = width / (4/3);
+          }
+        
+          video.setAttribute('width', width);
+          video.setAttribute('height', height);
+          canvas.setAttribute('width', width);
+          canvas.setAttribute('height', height);
+          streaming = true;
+        }
+    })
 }
 
 $('#start-qr').click(() => {
-    $('#camera-wrapper').css('display', 'block');
-    // startCamera();
-    // startQRScan();
+    $('#camera-wrapper').show();
+    startCamera();
+    startQRScan();
+});
+
+$('#start-camera').click(() => {
+    $('#camera-wrapper').show();
+    startCamera();
+    $(captureButton).show();
 });
 
 function stopQRScan() {
@@ -239,8 +277,8 @@ function startQRScan() {
                 for (const barcode of codes) {
                     // Log the barcode to the console
                     console.log(barcode);
-                    drawCodePath(barcode);
-                    $('#recycle-bin-id').text(barcode.rawValue);
+                    // drawCodePath(barcode);
+                    $('#recycle-bin-id').val(barcode.rawValue);
                     stopQRScan();
                     // alert(JSON.stringify(barcode.cornerPoints))
                     // videoStream.getTracks().forEach(function(track) {
@@ -300,7 +338,7 @@ panBtn.addEventListener("click", () => {
                     lng: position.coords.longitude,
                 };
                 map.setCenter(pos);
-                locationMarker.position = pos;
+                locationMarker.setPosition(new google.maps.LatLng(pos.lat, pos.lng));
             },
             () => {
                 handleLocationError(true, infoWindow, map.getCenter());
@@ -314,4 +352,44 @@ panBtn.addEventListener("click", () => {
 
 plusBtn.addEventListener("click", () => {
     $('#submit-wrapper').show();
-})
+    $('#content').show();
+});
+
+function clearPhoto() {
+    var context = canvas.getContext('2d');
+    context.fillStyle = "#AAA";
+    context.fillRect(0, 0, canvas.width, canvas.height);
+
+    var data = canvas.toDataURL('image/png');
+    cameraPhoto.setAttribute('src', data);
+}
+
+function takePicture() {
+    var context = canvas.getContext('2d');
+    // if (width && height) {
+        canvas.width = width;
+        canvas.height = height;
+        context.drawImage(video, 0, 0, width, height);
+
+        var data = canvas.toDataURL('image/png');
+        cameraPhoto.setAttribute('src', data);
+    // } else {
+    //     clearphoto();
+    // }
+}
+
+captureButton.addEventListener('click', function (ev) {
+    clearPhoto();
+    takePicture();
+    $('#camera-output').show();
+    $('#camera-wrapper').hide();
+    $(captureButton).hide();
+    ev.preventDefault();
+}, false);
+
+deletePhoto.addEventListener('click', function (ev) {
+
+    $('#camera-output').hide();
+    cameraPhoto.removeAttribute('src');
+    ev.preventDefault();
+}, false);
