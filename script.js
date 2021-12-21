@@ -107,7 +107,7 @@ function getItems() {
 }
 getItems();
 
-function getOneRecycleBin(id) {
+function getRecycleBin(id) {
     return new Promise((resolve, reject) => {
         $.ajax({
             url: `https://greenpoints-server.herokuapp.com/api/recycleBins/${id}`,
@@ -116,6 +116,29 @@ function getOneRecycleBin(id) {
                 resolve(recycleBin);
             }
         })
+    })
+}
+
+async function addActivityToUser(activity, id) {
+    user = await getUser(id);
+    let activities = []
+    if (user.activities)
+        activities = user.activities;
+    activities.push(activity)
+    $.ajax({
+        url: `https://greenpoints-server.herokuapp.com/api/users/${id}`,
+        type: 'PATCH',
+        data: {
+            "activities": activities
+        },
+        success: (result) => {
+            alert('Thanks for recycling')
+            resetSubmitFields()
+        },
+        error: (err) => {
+            console.log(err)
+            alert('Something happened with your submission, try again')
+        }
     })
 }
 
@@ -130,7 +153,6 @@ function initMap() {
         zoomControl: false,
     });
 
-    // Create markers.
     locationMarker = new google.maps.Marker({
         position: { lat: 32.089433, lng: 34.80363 },
         icon: binDict['location'].icon,
@@ -170,9 +192,7 @@ function handleLocationError(browserHasGeolocation, pos) {
 }
 
 function startCamera() {
-    // Check if device has camera
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        // Use video without audio
         const constraints = {
             video: {
                 facingMode: 'environment',
@@ -180,7 +200,6 @@ function startCamera() {
             audio: false
         }
 
-        // Start video stream
         navigator.mediaDevices.getUserMedia(constraints).then(stream => {
             video.srcObject = stream;
             videoStream = stream;
@@ -189,9 +208,6 @@ function startCamera() {
     video.addEventListener('canplay', function (ev) {
         if (!streaming) {
             height = video.videoHeight / (video.videoWidth / width);
-
-            // Firefox currently has a bug where the height can't be read from
-            // the video, so we will make assumptions if this happens.
 
             if (isNaN(height)) {
                 height = width / (4 / 3);
@@ -211,7 +227,7 @@ function stopQRScan() {
         clearInterval(qrScannerInterval);
     }
     stopCamera();
-    $('#camera-wrapper').css('display', 'none');
+    $('#camera-wrapper').hide();
 }
 
 function stopCamera() {
@@ -222,77 +238,23 @@ function stopCamera() {
 
 function startQRScan() {
     if ('BarcodeDetector' in window) {
-        // Create new barcode detector
         const barcodeDetector = new BarcodeDetector({ formats: ['qr_code'] });
-        // Detect code function 
         const detectCode = () => {
-            // Start detecting codes on to the video element
             barcodeDetector.detect(video).then(codes => {
-                // If no codes exit function
                 if (codes.length === 0) return;
 
                 for (const barcode of codes) {
-                    // Log the barcode to the console
-                    // console.log(barcode);
-                    // drawCodePath(barcode);
                     $('#recycle-bin-id').val(barcode.rawValue);
                     stopQRScan();
-                    updateSizeSelect(barcode.rawValue);
-                    // alert(JSON.stringify(barcode.cornerPoints))
-                    // videoStream.getTracks().forEach(function(track) {
-                    //     track.stop();
-                    //   });
+                    updateTypesSelect(barcode.rawValue);
                 }
             }).catch(err => {
-                // Log an error if one happens
                 console.error(err);
             })
         }
 
-        // Run detect code function every 100 milliseconds
         qrScannerInterval = setInterval(detectCode, 100);
     }
-}
-
-function drawCodePath({ cornerPoints }) {
-    const ctx = canvas.getContext('2d');
-    const strokeGradient = ctx.createLinearGradient(0, 0, canvas.scrollWidth, canvas.scrollHeight);
-
-    // Exit function and clear canvas if no corner points
-    if (!cornerPoints) return ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Clear canvas for new redraw
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Create new gradient
-    strokeGradient.addColorStop('0', '#c471ed');
-    strokeGradient.addColorStop('1', '#f7797d');
-
-    // Define stoke styles
-    ctx.strokeStyle = strokeGradient;
-    ctx.lineWidth = 4;
-
-    ctx.beginPath()
-    for (const [i, { x, y }] of cornerPoints.entries()) {
-        if (i === 0) {
-            // Move to starting position first corner
-            ctx.moveTo(x, y)
-            continue
-        }
-        // Draw line from current pos to x, y
-        ctx.lineTo(x, y)
-    }
-    ctx.closePath()
-    ctx.stroke();
-}
-
-function clearPhoto() {
-    let context = canvas.getContext('2d');
-    context.fillStyle = "#AAA";
-    context.fillRect(0, 0, canvas.width, canvas.height);
-
-    let data = canvas.toDataURL('image/png', 0.001);
-    cameraPhoto.setAttribute('src', data);
 }
 
 function takePicture() {
@@ -326,7 +288,6 @@ $('#start-camera').click(() => {
 });
 
 panBtn.addEventListener("click", () => {
-    // Try HTML5 geolocation.
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
             (position) => {
@@ -342,7 +303,6 @@ panBtn.addEventListener("click", () => {
             }
         );
     } else {
-        // Browser doesn't support Geolocation
         handleLocationError(false, map.getCenter());
     }
 });
@@ -353,7 +313,6 @@ plusBtn.addEventListener("click", () => {
 });
 
 captureButton.addEventListener('click', function (ev) {
-    clearPhoto();
     takePicture();
     $('#camera-output').show();
     $('#camera-wrapper').hide();
@@ -376,29 +335,6 @@ function resetSubmitFields() {
     document.querySelector('#recycle-bin-id').value = "";
 
 }
-async function addActivityToUser(activity, id) {
-    user = await getUser(id);
-    let activities = []
-    if (user.activities)
-        activities = user.activities;
-    activities.push(activity)
-    $.ajax({
-        url: `https://greenpoints-server.herokuapp.com/api/users/${id}`,
-        type: 'PATCH',
-        data: {
-            "activities": activities
-        },
-        success: (result) => {
-            alert('Thanks for recycling')
-            resetSubmitFields()
-        },
-        error: (err) => {
-            console.log(err)
-            alert('Something happened with your submission, try again')
-        }
-    })
-
-}
 
 submitBtn.addEventListener('click', async function (ev) {
     const itemAmount = parseInt(document.querySelector('#item-amount').value);
@@ -417,7 +353,7 @@ submitBtn.addEventListener('click', async function (ev) {
                 quantity: itemAmount
             }]
         }
-        const mybin = await getOneRecycleBin(binId);
+        const mybin = await getRecycleBin(binId);
         if ((mybin.currentCapacity + (itemAmount * selected.getAttribute('size'))) <= mybin.maxCapacity) {
             addActivityToUser(activity, userId);
             $('#content-close').click();
@@ -433,10 +369,10 @@ submitBtn.addEventListener('click', async function (ev) {
     ev.preventDefault();
 })
 
-async function updateSizeSelect(binId) {
+async function updateTypesSelect(binId) {
     let bin;
     try {
-        bin = await getOneRecycleBin(binId);
+        bin = await getRecycleBin(binId);
     } catch (err) {
         console.error(err);
     }
