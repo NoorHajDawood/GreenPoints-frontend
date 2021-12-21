@@ -1,31 +1,123 @@
-// function initMap() {
-//     map = new google.maps.Map(document.getElementById('map'), {
-//         center: {lat: 32.089433, lng: 34.80363},
-//         zoom: 17,
-//         mapId: 'f0ee40db14646c1b'
-//       });
-// }
+// static user info
+const userId = '61c19bb9269ad3414f882069';
+let user;
 
-// Note: This example requires that you consent to location sharing when
-// prompted by your browser. If you see the error "The Geolocation service
-// failed.", it means you probably did not give permission for the browser to
-// locate you.
-let map, infoWindow;
+// map controls
+let map;
+let locationMarker;
+const panBtn = document.querySelector('#pan-btn');
+const plusBtn = document.querySelector('#plus-btn');
+
+// camera controls
 const video = document.querySelector('#video');
 const canvas = document.querySelector('#canvas');
 let videoStream = null;
 let qrScannerInterval = null;
-let locationMarker;
-const panBtn = document.querySelector('#pan-btn');
-const plusBtn = document.querySelector('#plus-btn');
 const cameraOutput = document.querySelector('#camera-output');
 const cameraPhoto = document.querySelector('#camera-photo');
 const deletePhoto = document.querySelector('#delete-photo');
 const captureButton = document.querySelector('#capture-btn');
 const photoCanvas = document.querySelector('#photo-canvas');
-let width = 320;    // We will scale the photo width to this
-let height = 0;     // This will be computed based on the input stream
+const submitBtn = document.querySelector('#submit-btn');
+let width = 320;
+let height = 0;
 let streaming = false;
+
+// recycle bins & items
+let bins = [];
+let items = [];
+const iconBase =
+    "./images/icons/";
+const binDict = {
+    battery: {
+        icon: iconBase + "battery-bin.png",
+    },
+    ewaste: {
+        icon: iconBase + "ewaste-bin.png",
+        info: "Batteries and electronic devices such as cables, chargers, calculators, phones, timepieces, electric shavers, lamps and battery-powered toys. At the large collection sites in the city, you can also discard big electric appliances such as washing machines and televisions.",
+        imgUrl: "https://www.ramat-gan.muni.il/files/poi/battery_150.jpg",
+    },
+    glass: {
+        icon: iconBase + "glass-bin.png",
+        info: "Glass containers, such as olive oil bottles, perfume bottles, coffee jars, jam or honey jars, and baby food jars. The glass containers should be empty and their lids should be removed.",
+        imgUrl: "https://www.ramat-gan.muni.il/files/poi/glass.jpg",
+    },
+    lightBulbs: {
+        icon: iconBase + "light-bubls-bin.png",
+    },
+    metal: {
+        icon: iconBase + "metal-bin.png",
+    },
+    organic: {
+        icon: iconBase + "organic-bin.png",
+        info: "Food scraps, excluding meat and dairy products.",
+        imgUrl: "https://www.hiriya.co.il/prdPics/1011_ar_body_heb_3_1_1557146966.jpg",
+    },
+    paper: {
+        icon: iconBase + "paper-bin.png",
+        info: "Newspapers, brochures, books, cereal boxes, egg cartons (but not milk cartons!)",
+        imgUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/%D7%90%D7%9E%D7%A0%D7%99%D7%A8.jpg/440px-%D7%90%D7%9E%D7%A0%D7%99%D7%A8.jpg",
+    },
+    plastic: {
+        icon: iconBase + "plastic-bin.png",
+        info: "Soft drink and mineral water bottles containing at least 1.5 liters, as well as plastic bottles containing cleaning agents or detergents, such as dishwashing liquid,  fabric softener,  shampoo, conditioner, et al.",
+        imgUrl: "https://www.ramat-gan.muni.il/files/poi/bottles.jpg",
+    },
+    textile: {
+        icon: iconBase + "textile-bin.png",
+        info: "Old clothes, shoes, linens and cloth bags.",
+        imgUrl: "https://www.ramat-gan.muni.il/files/poi/CLOTHS.jpg",
+    },
+    location: {
+        icon: iconBase + "location.png",
+    },
+};
+
+function getUser(id) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: `https://greenpoints-server.herokuapp.com/api/users/${id}`,
+            type: 'GET',
+            success: (result) => {
+                resolve(result);
+            }
+        })
+    })
+}
+
+function getRecycleBins() {
+    $.ajax({
+        url: 'https://greenpoints-server.herokuapp.com/api/recycleBins/',
+        type: 'GET',
+        success: (result) => {
+            bins = result;
+            markBinsOnMap();
+        }
+    })
+}
+
+function getItems() {
+    $.ajax({
+        url: 'https://greenpoints-server.herokuapp.com/api/items/',
+        type: 'GET',
+        success: (result) => {
+            items = result;
+        }
+    })
+}
+getItems();
+
+function getOneRecycleBin(id) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: `https://greenpoints-server.herokuapp.com/api/recycleBins/${id}`,
+            type: 'GET',
+            success: (recycleBin) => {
+                resolve(recycleBin);
+            }
+        })
+    })
+}
 
 function initMap() {
     map = new google.maps.Map(document.getElementById("map"), {
@@ -38,88 +130,6 @@ function initMap() {
         zoomControl: false,
     });
 
-    const iconBase =
-        "./images/icons/";
-    const binDict = {
-        battery: {
-            icon: iconBase + "battery-bin.png",
-        },
-        ewaste: {
-            icon: iconBase + "ewaste-bin.png",
-            info: "Batteries and electronic devices such as cables, chargers, calculators, phones, timepieces, electric shavers, lamps and battery-powered toys. At the large collection sites in the city, you can also discard big electric appliances such as washing machines and televisions.",
-            imgUrl: "https://www.ramat-gan.muni.il/files/poi/battery_150.jpg",
-        },
-        glass: {
-            icon: iconBase + "glass-bin.png",
-            info: "Glass containers, such as olive oil bottles, perfume bottles, coffee jars, jam or honey jars, and baby food jars. The glass containers should be empty and their lids should be removed.",
-            imgUrl: "https://www.ramat-gan.muni.il/files/poi/glass.jpg",
-        },
-        lightBulbs: {
-            icon: iconBase + "light-bubls-bin.png",
-        },
-        metal: {
-            icon: iconBase + "metal-bin.png",
-        },
-        organic: {
-            icon: iconBase + "organic-bin.png",
-            info: "Food scraps, excluding meat and dairy products.",
-            imgUrl: "https://www.hiriya.co.il/prdPics/1011_ar_body_heb_3_1_1557146966.jpg",
-        },
-        paper: {
-            icon: iconBase + "paper-bin.png",
-            info: "Newspapers, brochures, books, cereal boxes, egg cartons (but not milk cartons!)",
-            imgUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/%D7%90%D7%9E%D7%A0%D7%99%D7%A8.jpg/440px-%D7%90%D7%9E%D7%A0%D7%99%D7%A8.jpg",
-        },
-        plastic: {
-            icon: iconBase + "plastic-bin.png",
-            info: "Soft drink and mineral water bottles containing at least 1.5 liters, as well as plastic bottles containing cleaning agents or detergents, such as dishwashing liquid,  fabric softener,  shampoo, conditioner, et al.",
-            imgUrl: "https://www.ramat-gan.muni.il/files/poi/bottles.jpg",
-        },
-        textile: {
-            icon: iconBase + "textile-bin.png",
-            info: "Old clothes, shoes, linens and cloth bags.",
-            imgUrl: "https://www.ramat-gan.muni.il/files/poi/CLOTHS.jpg",
-        },
-        location: {
-            icon: iconBase + "location.png",
-        },
-    };
-
-    const bins = [
-        {
-            _id: "1",
-            type: "textile",
-            location: { lat: 32.08938856151897, lng: 34.80317547458683 },
-            QRCode: "kj1h612sd6",
-            maxCapacity: 200,
-            currentCapacity: 30,
-        },
-        {
-            _id: "2",
-            location: { lat: 32.09013762006465, lng: 34.803689719448656 },
-            type: "paper",
-            QRCode: "kj1h612sd6",
-            maxCapacity: 200,
-            currentCapacity: 180,
-        },
-        {
-            _id: "3",
-            location: { lat: 32.09015290690907, lng: 34.80441146662424 },
-            type: "glass",
-            QRCode: "kj1h612sd6",
-            maxCapacity: 200,
-            currentCapacity: 125,
-        },
-        {
-            _id: "4",
-            location: { lat: 32.08722542941173, lng: 34.80357243553262 },
-            type: "organic",
-            QRCode: "kj1h612sd6",
-            maxCapacity: 200,
-            currentCapacity: 83,
-        },
-    ];
-
     // Create markers.
     locationMarker = new google.maps.Marker({
         position: { lat: 32.089433, lng: 34.80363 },
@@ -129,6 +139,10 @@ function initMap() {
         animation: google.maps.Animation.DROP,
     });
 
+    getRecycleBins();
+}
+
+function markBinsOnMap() {
     const binsMarkers = bins.map((bin, i) => {
         const marker = new google.maps.Marker({
             _id: bin._id,
@@ -136,69 +150,24 @@ function initMap() {
             type: bin.type,
             icon: binDict[bin.type].icon,
             title: `${bin.type} recycle bin`,
-            QRCode: bin.QRCode,
             maxCapacity: bin.maxCapacity,
             currentCapacity: bin.currentCapacity,
             imgUrl: bin.imgUrl ?? binDict[bin.type].imgUrl ?? null,
             map,
             animation: google.maps.Animation.DROP,
         });
-        google.maps.event.addListener(marker, 'click', function () {
-            $('#content').css('display', 'block');
-            $('#bin-capacity').css('width', `${this.currentCapacity * 100 / this.maxCapacity}%`)
-            $('#bin-capacity').text(`${this.currentCapacity * 100 / this.maxCapacity}%`)
-            $('#bin-img').attr('src', this.imgUrl)
-            $('#bin-info').text(binDict[this.type].info)
-        });
-        // marker.addListener("click", () => {
-        //     $('#content').css('display', 'grid');
-        //     console.log(this.currentCapacity,this.maxCapacity);
-        //     $('#bin-capacity').css('width', `${10}%`)
-        // })
         return marker;
     });
 
     // Add a marker clusterer to manage the markers.
     const markerCluster = new markerClusterer.MarkerClusterer({ map, markers: binsMarkers });
-
-    // const plusControlDiv = document.createElement('div');
-    // $(plusControlDiv).addClass('btn-circle');
-    // $(plusControlDiv).text('+');
-    // $(plusControlDiv).css('margin', '0.5rem');
-    // map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(plusControlDiv);
-
-    // const panControlDiv = document.createElement('div');
-    // $(panControlDiv).addClass('btn-circle');
-    // $(panControlDiv).text('📍');
-    // $(panControlDiv).css('margin', '0.5rem 0.5rem 0');
-    // map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(panControlDiv);
-    // panControlDiv.classList.add("custom-map-control-button");
-    // 
 }
 
-function handleLocationError(browserHasGeolocation, infoWindow, pos) {
-    // infoWindow.setPosition(pos);
-    // infoWindow.setContent(
-    //     browserHasGeolocation
-    //         ? "Error: The Geolocation service failed."
-    //         : "Error: Your browser doesn't support geolocation."
-    // );
-    // infoWindow.open(map);
+function handleLocationError(browserHasGeolocation, pos) {
     alert(browserHasGeolocation
         ? "Error: The Geolocation service failed."
         : "Error: Your browser doesn't support geolocation.");
 }
-
-
-
-$('#content-close').click(() => {
-    $('#content').hide();
-    $('#submit-wrapper').hide();
-    $('#camera-wrapper').hide();
-    $(captureButton).hide();
-    stopCamera();
-})
-
 
 function startCamera() {
     // Check if device has camera
@@ -217,37 +186,25 @@ function startCamera() {
             videoStream = stream;
         });
     }
-    video.addEventListener('canplay', function(ev){
+    video.addEventListener('canplay', function (ev) {
         if (!streaming) {
-          height = video.videoHeight / (video.videoWidth/width);
-        
-          // Firefox currently has a bug where the height can't be read from
-          // the video, so we will make assumptions if this happens.
-        
-          if (isNaN(height)) {
-            height = width / (4/3);
-          }
-        
-          video.setAttribute('width', width);
-          video.setAttribute('height', height);
-          canvas.setAttribute('width', width);
-          canvas.setAttribute('height', height);
-          streaming = true;
+            height = video.videoHeight / (video.videoWidth / width);
+
+            // Firefox currently has a bug where the height can't be read from
+            // the video, so we will make assumptions if this happens.
+
+            if (isNaN(height)) {
+                height = width / (4 / 3);
+            }
+
+            video.setAttribute('width', width);
+            video.setAttribute('height', height);
+            canvas.setAttribute('width', width);
+            canvas.setAttribute('height', height);
+            streaming = true;
         }
     })
 }
-
-$('#start-qr').click(() => {
-    $('#camera-wrapper').show();
-    startCamera();
-    startQRScan();
-});
-
-$('#start-camera').click(() => {
-    $('#camera-wrapper').show();
-    startCamera();
-    $(captureButton).show();
-});
 
 function stopQRScan() {
     if (qrScannerInterval) {
@@ -276,10 +233,11 @@ function startQRScan() {
 
                 for (const barcode of codes) {
                     // Log the barcode to the console
-                    console.log(barcode);
+                    // console.log(barcode);
                     // drawCodePath(barcode);
                     $('#recycle-bin-id').val(barcode.rawValue);
                     stopQRScan();
+                    updateSizeSelect(barcode.rawValue);
                     // alert(JSON.stringify(barcode.cornerPoints))
                     // videoStream.getTracks().forEach(function(track) {
                     //     track.stop();
@@ -328,6 +286,45 @@ function drawCodePath({ cornerPoints }) {
     ctx.stroke();
 }
 
+function clearPhoto() {
+    let context = canvas.getContext('2d');
+    context.fillStyle = "#AAA";
+    context.fillRect(0, 0, canvas.width, canvas.height);
+
+    let data = canvas.toDataURL('image/png', 0.001);
+    cameraPhoto.setAttribute('src', data);
+}
+
+function takePicture() {
+    let context = canvas.getContext('2d');
+    canvas.width = width;
+    canvas.height = height;
+    context.drawImage(video, 0, 0, width, height);
+
+    let data = canvas.toDataURL('image/png', 0.001);
+    cameraPhoto.setAttribute('src', data);
+}
+
+$('#content-close').click(() => {
+    $('#content').hide();
+    $('#submit-wrapper').hide();
+    $('#camera-wrapper').hide();
+    $(captureButton).hide();
+    stopCamera();
+})
+
+$('#start-qr').click(() => {
+    $('#camera-wrapper').show();
+    startCamera();
+    startQRScan();
+});
+
+$('#start-camera').click(() => {
+    $('#camera-wrapper').show();
+    startCamera();
+    $(captureButton).show();
+});
+
 panBtn.addEventListener("click", () => {
     // Try HTML5 geolocation.
     if (navigator.geolocation) {
@@ -341,12 +338,12 @@ panBtn.addEventListener("click", () => {
                 locationMarker.setPosition(new google.maps.LatLng(pos.lat, pos.lng));
             },
             () => {
-                handleLocationError(true, infoWindow, map.getCenter());
+                handleLocationError(true, map.getCenter());
             }
         );
     } else {
         // Browser doesn't support Geolocation
-        handleLocationError(false, infoWindow, map.getCenter());
+        handleLocationError(false, map.getCenter());
     }
 });
 
@@ -354,29 +351,6 @@ plusBtn.addEventListener("click", () => {
     $('#submit-wrapper').show();
     $('#content').show();
 });
-
-function clearPhoto() {
-    var context = canvas.getContext('2d');
-    context.fillStyle = "#AAA";
-    context.fillRect(0, 0, canvas.width, canvas.height);
-
-    var data = canvas.toDataURL('image/png');
-    cameraPhoto.setAttribute('src', data);
-}
-
-function takePicture() {
-    var context = canvas.getContext('2d');
-    // if (width && height) {
-        canvas.width = width;
-        canvas.height = height;
-        context.drawImage(video, 0, 0, width, height);
-
-        var data = canvas.toDataURL('image/png');
-        cameraPhoto.setAttribute('src', data);
-    // } else {
-    //     clearphoto();
-    // }
-}
 
 captureButton.addEventListener('click', function (ev) {
     clearPhoto();
@@ -388,8 +362,96 @@ captureButton.addEventListener('click', function (ev) {
 }, false);
 
 deletePhoto.addEventListener('click', function (ev) {
-
     $('#camera-output').hide();
     cameraPhoto.removeAttribute('src');
     ev.preventDefault();
 }, false);
+
+function resetSubmitFields() {
+    document.querySelector('#item-amount').value = 0;
+    document.querySelector('#item-types').html = "";
+    cameraPhoto.removeAttribute('src');
+    $(cameraOutput).hide();
+    $('#amount-select').hide();
+    document.querySelector('#recycle-bin-id').value = "";
+
+}
+async function addActivityToUser(activity, id) {
+    user = await getUser(id);
+    let activities = []
+    if (user.activities)
+        activities = user.activities;
+    activities.push(activity)
+    $.ajax({
+        url: `https://greenpoints-server.herokuapp.com/api/users/${id}`,
+        type: 'PATCH',
+        data: {
+            "activities": activities
+        },
+        success: (result) => {
+            alert('Thanks for recycling')
+            resetSubmitFields()
+        },
+        error: (err) => {
+            console.log(err)
+            alert('Something happened with your submission, try again')
+        }
+    })
+
+}
+
+submitBtn.addEventListener('click', async function (ev) {
+    const itemAmount = parseInt(document.querySelector('#item-amount').value);
+    const typesSelect = document.querySelector('#item-types');
+    const imgUrl = cameraPhoto.getAttribute('src');
+    const binId = $('#recycle-bin-id').val();
+
+    if (itemAmount && itemAmount > 0 && imgUrl && binId) {
+        const selected = typesSelect.options[typesSelect.selectedIndex]
+        const activity = {
+            imgUrl,
+            dateTime: new Date().toString(),
+            recycleBinID: binId,
+            items: [{
+                itemId: selected.getAttribute('item-id'),
+                quantity: itemAmount
+            }]
+        }
+        const mybin = await getOneRecycleBin(binId);
+        if ((mybin.currentCapacity + (itemAmount * selected.getAttribute('size'))) <= mybin.maxCapacity) {
+            addActivityToUser(activity, userId);
+            $('#content-close').click();
+        }
+        else {
+            alert('Recycle bin is Full!')
+
+        }
+    }
+    else {
+        alert('wrong info!')
+    }
+    ev.preventDefault();
+})
+
+async function updateSizeSelect(binId) {
+    let bin;
+    try {
+        bin = await getOneRecycleBin(binId);
+    } catch (err) {
+        console.error(err);
+    }
+    $('#recycle-bin-type').text(bin.type);
+    const types = items.filter((item, i) => item.type == bin.type);
+    typesSelect = $('#item-types');
+
+    for (x of types) {
+        item = document.createElement('option');
+        item.value = x.name;
+        item.text = x.name;
+        item.setAttribute('size', x.size);
+        item.setAttribute('item-id', x._id);
+        typesSelect.append(item)
+    }
+
+    $('#amount-select').show();
+}
