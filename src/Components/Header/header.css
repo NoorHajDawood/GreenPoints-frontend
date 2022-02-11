@@ -1,0 +1,42 @@
+.user-header
+{
+    position: absolute;
+    top:0;
+    height: 50px;
+    z-index: 5;
+    width: 100%;
+    background-color: rgba(245, 245, 245, 0.89);
+}
+#logo
+{
+    background-image: url("../../Images/logo.png");
+    display: block;
+    float :left;
+    width: 80px;
+    height: 60px;
+    background-repeat: no-repeat;
+    background-size: contain;
+    z-index: 6;
+    margin-top:7px;
+    margin-left:20px;
+}
+#profile{
+    float:right;
+    display: block;
+    width: 32px;
+    height: 32px;
+    background-image: url("../../Images/user.png");
+    z-index: 6;
+    margin-right: 20px;
+    margin-top: 7px;
+  
+
+}
+
+.p-4 img{
+    border-radius: 50%;
+}
+
+#submit-btn{
+margin-top: 30px;
+}
