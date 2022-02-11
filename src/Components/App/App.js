@@ -5,6 +5,7 @@ import { Map } from '../Map';
 import QrScanner from '../QRScanner/qrScanner';
 import Header from '../Header/header';
 import Recycle from '../Recycle/Recycle';
+import RecycleResult from '../RecycleResult/RecycleResult';
 // import Profile from '../Profile/profile';
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
         <ReactRouter path="/map" element={<><Map /> <button id='recycling-button'/></>} />
         <ReactRouter path="/qrscanner" element={<QrScanner />} />
         <ReactRouter path="/recycle" element={<Recycle />} />
+        <ReactRouter path="/recycleresult" element={<RecycleResult />} />
         {/* <ReactRouter path="/profile" element={<Profile />} /> */}
       </BrowserRouter>
       

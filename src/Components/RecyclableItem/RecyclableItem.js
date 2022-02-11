@@ -24,8 +24,7 @@ function RecyclableItem(props) {
             {props.icon ? <img src={props.icon}
                 style={{
                     height: '40px',
-                    filter: selected ? 'invert(100%) sepia(0%) saturate(7500%) hue-rotate(144deg) brightness(113%) contrast(115%)' : 
-                    'invert(61%) sepia(11%) saturate(596%) hue-rotate(110deg) brightness(85%) contrast(90%)',
+                    filter: selected ? 'brightness(0) invert(1)' : '',
                 }} /> : <></>}
             <span style={{
                 fontSize: '0.75rem',

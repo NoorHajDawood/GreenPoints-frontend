@@ -10,7 +10,12 @@ function Recycle(props) {
     const [types, setTypes] = useState([])
 
     const selectType = (type, isSelected) => {
-        console.log(type)
+        let index = types.indexOf(type)
+        if(isSelected && index === -1) {
+            setTypes([...types, type]);
+        } else if(!isSelected) {
+            setTypes(types.filter(item => item !== type))
+        }
     }
 
     return (
@@ -44,7 +49,7 @@ function Recycle(props) {
                 <RecyclableItem icon={glass} type='glass' onClick={selectType}/>
                 <RecyclableItem icon={paper} type='paper' onClick={selectType}/>
                 <RecyclableItem icon={can} type='can' onClick={selectType}/>
-                <RecyclableItem type='other trash' width='100%' height='41px' onClick={selectType}/>
+                <RecyclableItem type='other' width='100%' height='41px' onClick={selectType}/>
             </div>
 
             <button style={{
