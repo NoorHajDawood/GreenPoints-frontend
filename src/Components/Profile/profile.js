@@ -1,33 +1,20 @@
 import React from 'react';
-// import Card from '@mui/material/Card';
-// import CardContent from '@mui/material/CardContent';
-// import CardMedia from '@mui/material/CardMedia';
-// import Typography from '@mui/material/Typography';
-import { Card, CardContent, CardMedia, Typography } from '@mui/material';
+import './profile.css';
+import profilePic from '../../Images/default-profile-picture.svg';
 
 function Profile(props) {
 
     return (
-        <Card sx={{ width: 327, height: 200 }} className='card' >
-            <CardMedia className='cardimg'
-                component="img"
-                sx={{ width: 268.19, height: 170.38 }}
-                image='../../Images/Open Peeps.png'
-                alt="Profile img"
+        <div className='profile'>
+            <img src={profilePic} alt="Profile_Pic"/>
+            <h3>Hans</h3>
+            <div className='profile-buttons'>
+                <button className='profile-setting'><span>settings </span></button>
+                <button className='profile-history'><span>History </span></button>
 
-            />
-            <CardContent className='cardcontent'>
-                <Typography gutterBottom className='vacation-title' >
-                    settings
-                </Typography>
-                <Typography variant="caption" gutterBottom >
-                    History
-                </Typography>
+            </div>
+        </div>
 
-
-            </CardContent>
-
-        </Card>
 
     );
 

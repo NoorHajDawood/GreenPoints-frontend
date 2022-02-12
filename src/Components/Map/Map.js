@@ -8,11 +8,6 @@ const containerStyle = {
     height: '100vh'
 };
 
-const center = {
-    lat: 32.089433,
-    lng: 34.80363
-};
-
 const options = {
     mapTypeControl: false,
     fullscreenControl: false,
@@ -21,51 +16,6 @@ const options = {
     styles: mapStyling
 }
 
-const iconBase = '../../Images/icons/';
-const binDict = {
-    battery: {
-        icon: iconBase + "battery-bin.png",
-    },
-    ewaste: {
-        icon: iconBase + "ewaste-bin.png",
-        info: "Batteries and electronic devices such as cables, chargers, calculators, phones, timepieces, electric shavers, lamps and battery-powered toys. At the large collection sites in the city, you can also discard big electric appliances such as washing machines and televisions.",
-        imgUrl: "https://www.ramat-gan.muni.il/files/poi/battery_150.jpg",
-    },
-    glass: {
-        icon: iconBase + "glass-bin.png",
-        info: "Glass containers, such as olive oil bottles, perfume bottles, coffee jars, jam or honey jars, and baby food jars. The glass containers should be empty and their lids should be removed.",
-        imgUrl: "https://www.ramat-gan.muni.il/files/poi/glass.jpg",
-    },
-    lightBulbs: {
-        icon: iconBase + "light-bubls-bin.png",
-    },
-    metal: {
-        icon: iconBase + "metal-bin.png",
-    },
-    organic: {
-        icon: iconBase + "organic-bin.png",
-        info: "Food scraps, excluding meat and dairy products.",
-        imgUrl: "https://www.hiriya.co.il/prdPics/1011_ar_body_heb_3_1_1557146966.jpg",
-    },
-    paper: {
-        icon: iconBase + "paper-bin.png",
-        info: "Newspapers, brochures, books, cereal boxes, egg cartons (but not milk cartons!)",
-        imgUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/%D7%90%D7%9E%D7%A0%D7%99%D7%A8.jpg/440px-%D7%90%D7%9E%D7%A0%D7%99%D7%A8.jpg",
-    },
-    plastic: {
-        icon: iconBase + "plastic-bin.png",
-        info: "Soft drink and mineral water bottles containing at least 1.5 liters, as well as plastic bottles containing cleaning agents or detergents, such as dishwashing liquid,  fabric softener,  shampoo, conditioner, et al.",
-        imgUrl: "https://www.ramat-gan.muni.il/files/poi/bottles.jpg",
-    },
-    textile: {
-        icon: iconBase + "textile-bin.png",
-        info: "Old clothes, shoes, linens and cloth bags.",
-        imgUrl: "https://www.ramat-gan.muni.il/files/poi/CLOTHS.jpg",
-    },
-    location: {
-        icon: iconBase + "location.png",
-    },
-};
 
 function Map(props) {
     const [map, setMap] = useState(null);
@@ -84,7 +34,7 @@ function Map(props) {
         }
         setBins(result.data);
     };
-    
+
     useEffect(() => {
         loadBins();
     }, []);

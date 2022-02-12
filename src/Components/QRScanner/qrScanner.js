@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react'
-import QrReader from 'react-qr-reader'
+import React, { useState, useEffect } from 'react';
+import QrReader from 'react-qr-reader';
 import { IoMdQrScanner } from 'react-icons/io';
+import classes from './QrScanner.module.css';
 
 function QrScanner(props) {
     const [binId, setBinId] = useState('No result');
@@ -14,17 +15,11 @@ function QrScanner(props) {
     }
     return (
         <>
-            <div style={{
-                boxSizing: 'border-box',
-                paddingTop: '90px',
-                display: 'flex',
-                flexDirection: 'column',
-                marginBottom: '34px',
-            }}>
-                <span style={{color: '#189A46', lineHeight: '0'}}>
-                    <IoMdQrScanner size={30}/>
+            <div className={classes.container}>
+                <span className={classes.scannericon}>
+                    <IoMdQrScanner size={30} />
                 </span>
-                <span style={{fontSize: '16px', lineHeight: '24px', fontWeight: 'bold'}}>
+                <span className={classes.scantitle}>
                     Scan the code
                 </span>
             </div>
@@ -37,9 +32,9 @@ function QrScanner(props) {
                     background: 'white',
                 }}
             />
-            <span style={{fontSize: '10px', color: '#DA762D'}}>
+            <span className={classes.scaninfo}>
                 Scan the QR Code on the Recycle Bin to start recycling
-                </span>
+            </span>
         </>
     )
 

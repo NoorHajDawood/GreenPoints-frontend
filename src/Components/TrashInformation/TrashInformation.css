@@ -1,0 +1,57 @@
+.trash-information{
+    position: absolute;
+    width: 327px;
+    height: 302px;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 1px solid #bcbebd;
+    border-radius:10%;
+    background-color: white;
+    text-align: center;
+}
+
+.trash-icon{
+    background-image:url('../../Images/trash-icon.svg') ;
+    width: 27px;
+    height: 27px;
+    background-repeat: no-repeat;
+    background-position: center;
+    margin: 22px auto 0;
+    display: block;
+}
+
+
+.trash-container{
+    position: relative;
+    width: 89px;
+    height: 114px;
+    border: 1px solid black;
+    border-radius:10%;
+    margin: 17px auto 0;
+}
+
+.trash-capacity{
+    position: absolute;
+    bottom: 7px;
+    left: 31px;
+}
+
+
+.trash-navigation-button{
+    width: 136px;
+    height: 36px;
+    border-radius:10px;
+    border: 1px solid black;
+    background-color: black;
+    color: white;
+}
+
+.trash-hr-line {
+    position: absolute;
+    width: 125px;
+    height: 0;
+    border: 1px solid black;
+    border-radius: 10px;
+    left: -18px;
+}
