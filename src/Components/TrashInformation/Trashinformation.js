@@ -10,6 +10,7 @@ const yellow = 'rgba(121,92,9,1)';
 
 function TrashInformation(props) {
     const [address, setAddress] = useState('');
+    const [percentCapacity, setPercentCapacity] = useState('');
 
     async function fetchAddress(lat, lng) {
         const requestOptions = {
@@ -25,37 +26,40 @@ function TrashInformation(props) {
         return '';
     }
 
-    const getAddress = async () => {
-        const result = await fetchAddress(32.08938856151897, 34.80317547458683);
-        console.log(result);
+    const getAddress = async (lat, lng) => {
+        const result = await fetchAddress(lat, lng);
         setAddress(result);
     }
 
     useEffect(() => {
-        getAddress();
-    }, []);
+        getAddress(props.bin.location.lat, props.bin.location.lng);
+        setPercentCapacity((props.bin.currentCapacity / props.bin.maxCapacity) * 100)
+    }, [props]);
 
     return (
         <div className='trash-information'>
-                <span className='trash-icon' />
-                <div className='trash-properties'>
-                    <h2 className='overflow-text'>{address}</h2>
-                    <h4>plastic</h4>
-                </div>
-                <div className='trash-container'
+            <span className='trash-icon' />
+            <div className='trash-properties'>
+                <h2 className='overflow-text'>{address}</h2>
+                <h4>{props.bin.type}</h4>
+            </div>
+            <div className='trash-container'
+                style={{
+                    background: `linear-gradient(0deg,  ${percentCapacity >= 80 ? red : percentCapacity >= 50 ? yellow : green}
+                        0%, rgba(255,255,255,1)  ${percentCapacity}%)`
+                }}>
+                <div className='trash-hr-line'
                     style={{
-                        background: `linear-gradient(0deg, ${yellow} 0%, rgba(255,255,255,1) 60%)`
-                    }}>
-                    <div className='trash-hr-line'
-                        style={{
-                            bottom: '60%'
-                        }}
-                    ></div>
-                    <h5 className='trash-capacity'>60%</h5>
-                </div>
-                <h6 className='trash-capacity-info'>Almost Full</h6>
+                        bottom: `${percentCapacity}%`
+                    }}
+                ></div>
+                <h5 className='trash-capacity'>{percentCapacity}%</h5>
+            </div>
 
-                <button className='trash-navigation-button' >Take me there</button>
+            {percentCapacity >= 80 ? <h6 className='trash-capacity-info'>Almost Full</h6> : ''}
+
+
+            <button className='trash-navigation-button' >Take me there</button>
 
         </div>
 

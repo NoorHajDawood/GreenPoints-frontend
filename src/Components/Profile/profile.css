@@ -58,3 +58,20 @@
     display: block;
     line-height: 8.5;
 }
+
+.profile-points{
+    border: 1px solid #189A46;
+    background-color: #189A46;
+    color: white;
+    width: fit-content;
+    border-radius: 8px;
+    margin: 0 auto;
+    box-sizing: border-box;
+    padding: 0 5px;
+}
+
+
+.points-icon{
+    transform: translateY(10%);
+
+}
