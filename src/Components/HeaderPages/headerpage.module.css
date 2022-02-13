@@ -1,0 +1,63 @@
+.pageHeader
+{
+    position: absolute;
+    top:0;
+    height: 50px;
+    z-index: 5;
+    width: 100%;
+    background-color: rgba(245, 245, 245, 0.89);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.pageBack{
+    /* position: absolute; */
+    /* top: 13px;
+    left: 16px; */
+    margin-left: 16px;
+    background-image:url('../../Images/back.svg') ;
+    width:12.5px;
+    height: 25px;
+    background-repeat: no-repeat;
+    border: none;
+    background-color: transparent;
+}
+
+.pageTitle {
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 24px;
+    text-align: center;
+}
+
+#logo
+{
+    background-image: url("../../Images/logo.png");
+    display: block;
+    /* float :left; */
+    width: 80px;
+    height: 30px;
+    background-repeat: no-repeat;
+    background-size: contain;
+    z-index: 6;
+    /* margin-top:7px; */
+    margin-left: 16px;
+}
+.profile{
+    display: block;
+    width: 32px;
+    height: 32px;
+    background-image: url("../../Images/user.png");
+    z-index: 6;
+    margin-right: 16px;
+    border:none;
+    border-radius: 50%;
+}
+.p-4 img{
+    border-radius: 50%;
+}
+
+#submit-btn{
+margin-top: 30px;
+}
