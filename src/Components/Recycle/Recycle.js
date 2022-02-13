@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import RecyclableItem from '../RecyclableItem/RecyclableItem';
+import ItemCard from '../ItemCard/ItemCard';
 import plastic from '../../Images/icons/plastic.svg';
 import glass from '../../Images/icons/glass.svg';
 import paper from '../../Images/icons/paper.svg';
@@ -7,11 +7,7 @@ import can from '../../Images/icons/can.svg';
 import { IoMdQrScanner } from 'react-icons/io';
 
 function Recycle(props) {
-    const [types, setTypes] = useState([])
-
-    const selectType = (type, isSelected) => {
-        console.log(type)
-    }
+    const [type, setType] = useState("");
 
     return (
         <>
@@ -38,20 +34,19 @@ function Recycle(props) {
                 rowGap: '14px',
                 flexWrap: 'wrap',
                 margin: '70px 16px',
-
             }}>
-                <RecyclableItem icon={plastic} type='plastic' onClick={selectType}/>
-                <RecyclableItem icon={glass} type='glass' onClick={selectType}/>
-                <RecyclableItem icon={paper} type='paper' onClick={selectType}/>
-                <RecyclableItem icon={can} type='can' onClick={selectType}/>
-                <RecyclableItem type='other trash' width='100%' height='41px' onClick={selectType}/>
+                <ItemCard icon={plastic} type='plastic' selected={type === 'plastic' ? true : false}/>
+                <ItemCard icon={glass} type='glass' selected={type === 'glass' ? true : false}/>
+                <ItemCard icon={paper} type='paper' selected={type === 'paper' ? true : false}/>
+                <ItemCard icon={can} type='can' selected={type === 'can' ? true : false}/>
+                <ItemCard type='other' width='100%' height='41px' selected={type === 'other' ? true : false}/>
             </div>
 
             <button style={{
                 width: '78px',
                 height: '36px',
                 borderRadius: '10px',
-                background: '#D3DEDB',
+                background: '#222B28',
                 fontSize: '16px',
                 lineHeight: '16px',
                 fontWeight: 'bold',
@@ -59,6 +54,7 @@ function Recycle(props) {
                 border: 'none',
                 textAlign: 'center',
                 marginTop: '84px',
+                color: '#F9FBFA',
             }}><IoMdQrScanner style={{ verticalAlign: 'bottom' }}/> Scan</button>
         </>
     )
