@@ -132,7 +132,7 @@ function Map(props) {
             <GoogleMap
                 mapContainerStyle={containerStyle}
                 center={origin}
-                zoom={2}
+                zoom={zoom}
                 onLoad={onLoad}
                 onUnmount={onUnmount}
                 options={options}
