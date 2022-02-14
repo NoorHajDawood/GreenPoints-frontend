@@ -20,6 +20,11 @@ function TrashInformation(props) {
         setPercentCapacity(parseInt((props.bin.currentCapacity / props.bin.maxCapacity) * 100))
     }, [props]);
 
+    const setDestination = () => {
+        if(props.onNav)
+            props.onNav(props.bin?.location?.lat, props.bin?.location?.lng);
+    }
+    
     return (
         <div className='trash-information'>
             <span className='trash-icon' />
@@ -43,7 +48,7 @@ function TrashInformation(props) {
             {percentCapacity >= 80 ? <h6 className='trash-capacity-info'>Almost Full</h6> : ''}
 
 
-            <button className='trash-navigation-button' >Take me there</button>
+            <button className='trash-navigation-button' onClick={setDestination}>Take me there</button>
 
         </div>
 

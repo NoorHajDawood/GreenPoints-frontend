@@ -1,7 +1,6 @@
 import axios from 'axios';
 import AuthService from './auth.service';
-// const API_URL = 'https://greenpoints-server.herokuapp.com/api/coupons/';
-const API_URL = 'http://localhost:8000/api/coupons/';
+const API_URL = 'https://greenpoints-server.herokuapp.com/api/coupons/';
 
 const getCoupons = () => {
     return axios.get(API_URL, {

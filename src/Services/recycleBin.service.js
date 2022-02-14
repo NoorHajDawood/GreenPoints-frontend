@@ -1,7 +1,6 @@
 import axios from 'axios';
 import AuthService from './auth.service';
-// const API_URL = 'https://greenpoints-server.herokuapp.com/api/recycleBins/';
-const API_URL = 'http://localhost:8000/api/recycleBins/';
+const API_URL = 'https://greenpoints-server.herokuapp.com/api/recycleBins/';
 
 const getBins = () => {
     return axios.get(API_URL, {

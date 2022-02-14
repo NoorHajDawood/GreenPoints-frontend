@@ -1,7 +1,6 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react'
-import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
+import React, { useState, useCallback, useEffect } from 'react'
+import { GoogleMap, useJsApiLoader, Marker, DirectionsRenderer, DirectionsService } from '@react-google-maps/api';
 import mapStyling from './mapStyling.json'
-import axios from 'axios';
 import { MdLocationPin } from 'react-icons/md';
 import classes from './Map.module.css';
 import Popup from 'reactjs-popup';
@@ -24,17 +23,34 @@ const options = {
 
 function Map(props) {
     const [map, setMap] = useState(null);
-    const [pos, setPos] = useState({ lat: 32.089433, lng: 34.80363 });
+    const [origin, setOrigin] = useState({ lat: 32.089433, lng: 34.80363 });
     const [zoom, setZoom] = useState(17);
     const [bins, setBins] = useState([]);
     const [markers, setMarkers] = useState(null);
     const [currentBin, setCurrentBin] = useState({});
     const [openInfo, setOpenInfo] = useState(false);
+    const [destination, setDestination] = useState('');
+    const [response, setResponse] = useState(null);
+    const travelMode = 'WALKING';
+
+    useEffect(() => {
+        setDestination(props.destination ?? '');
+    }, [props]);
+
+    const directionsCallback = (response) => {
+        if (response !== null) {
+            if (response.status === 'OK') {
+                setResponse(response);
+            } else {
+                console.error('response: ', response)
+            }
+        }
+    }
 
     const panToLocation = () => {
         if ('geolocation' in navigator) {
             navigator.geolocation.getCurrentPosition((position) => {
-                setPos({
+                setOrigin({
                     lat: position.coords.latitude,
                     lng: position.coords.longitude
                 });
@@ -59,7 +75,7 @@ function Map(props) {
 
     const { isLoaded } = useJsApiLoader({
         id: 'f0ee40db14646c1b',
-        googleMapsApiKey: "AIzaSyAT5yEpu5gIzZyhb0252fC1eWd7zzUHJZY"
+        googleMapsApiKey: "AIzaSyBtzOrftwBHWy3-WjjU0X8re7ybte6ZutY"
     })
 
 
@@ -79,17 +95,17 @@ function Map(props) {
 
     useEffect(() => {
         if (map) {
-            map.panTo(pos)
+            map.panTo(origin)
             setZoom(16);
             setZoom(17);
         }
-    }, [pos, map])
+    }, [origin, map])
 
     useEffect(() => {
         setMarkers(bins.map((bin, i) => {
             return <Marker key={i + 1}
                 bin={bin}
-                onClick={()=>updateCurrentBin(bin)}
+                onClick={() => updateCurrentBin(bin)}
                 position={bin.location}
                 icon={require(`../../Images/icons/${bin.type}-bin.png`)}
             />
@@ -107,30 +123,56 @@ function Map(props) {
         setOpenInfo(false);
     }
 
+    const setDest = (lat, lng) => {
+        setDestination(`${lat}, ${lng}`);
+    }
+    
     return isLoaded ? (
         <>
             <GoogleMap
                 mapContainerStyle={containerStyle}
-                center={pos}
-                zoom={zoom}
+                center={origin}
+                zoom={2}
                 onLoad={onLoad}
                 onUnmount={onUnmount}
                 options={options}
             >
 
                 <Marker key={0}
-                    position={pos}
+                    position={origin}
                     icon={require(`../../Images/icons/location2.png`)}
                 />
                 {markers}
 
-                <></>
+                {
+              (
+                destination !== '' && origin
+              ) && (
+                <DirectionsService
+                  options={{
+                    destination: destination,
+                    origin: `${origin.lat}, ${origin.lng}`,
+                    travelMode: travelMode
+                  }}
+                  callback={directionsCallback}
+                />
+              )
+            }
+            {
+              response !== null && (
+                <DirectionsRenderer
+                  options={{
+                    directions: response
+                  }}
+                />
+              )
+            }
             </GoogleMap>
             <div className={classes.pan} onClick={panToLocation}>
                 <MdLocationPin size={35} style={{ verticalAlign: 'middle' }} />
             </div>
-            <Popup open={openInfo} onClose={closeInfo}  modal>
-                <TrashInformation bin={currentBin}/>
+            <Popup open={openInfo} onClose={closeInfo} modal>
+                <TrashInformation bin={currentBin} onNav={setDest} />
             </Popup>
         </>
     ) : <></>
