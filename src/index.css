@@ -29,8 +29,19 @@ code {
   background: rgba(0, 0, 0, 0.5);
 }
 
-/* .popup-content {
-  top: 50% !important;
-  left: 0 !important;
-  width: 100%;
-} */
+.show-hide-header{
+  display: block;
+}
+
+.btn-round {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background-color: #189A46;
+  border: none;
+  cursor: pointe;
+  font-size: 25px;
+  line-height: 0px;
+  color: white;
+  box-shadow: 0px 5px 10px 0px #189A46;
+}

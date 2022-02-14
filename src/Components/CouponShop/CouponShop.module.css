@@ -1,0 +1,30 @@
+.container {
+    box-sizing: border-box;
+    padding: 75px 16px 0;
+}
+
+.title {
+    font-size: 25px;
+    font-weight: 500;
+    line-height: 33px;
+    display: block;
+    text-align: start;
+}
+
+.couponsPoints {
+    display: block;
+    width: fit-content;
+    background-color:#189A46;
+    border: 1px solid #708F85;
+    color: #708F85;
+    border-radius: 5px;
+    margin: 3px 0 40px;
+    color: white;
+    box-sizing: border-box;
+    padding: 0 5px;
+}
+
+
+.pointsIcon{
+    transform: translateY(10%);
+}

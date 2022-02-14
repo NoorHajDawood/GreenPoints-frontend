@@ -47,7 +47,7 @@
 }
 
 .login {
-    width: 67px;
+    width: 82px;
     height: 36px;
     color: white;
     border-radius: 10px;
@@ -56,7 +56,7 @@
     display: block;
     font-size: 16px;
     font-weight: 500;
-    margin: 0 auto
+    margin: 0 auto;
 }
 
 .span {
@@ -76,5 +76,16 @@
     border: 1px solid #189A46;
     display: block;
     font-size: 16px;
-    font-weight: 500
+    font-weight: 500;
+    display: block;
+    line-height: 36px;
+    margin: 0 auto;
+    text-decoration: none;
+}
+
+.invalidFeedback {
+    color: red;
+    display: block;
+    text-align: start;
+    font-size: 14px;
 }

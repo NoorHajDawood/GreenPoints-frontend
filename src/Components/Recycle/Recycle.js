@@ -6,12 +6,61 @@ import paper from '../../Images/icons/paper.svg';
 import can from '../../Images/icons/can.svg';
 import { IoMdQrScanner } from 'react-icons/io';
 import classes from './Recycle.module.css';
+import { useSearchParams } from 'react-router-dom';
+import RecycleBinService from '../../Services/recycleBin.service';
+import RecycleResult from '../RecycleResult/RecycleResult';
+import UserService from '../../Services/user.service';
+import UtilService from '../../Services/util.service';
 
+const types = ['plastic', 'glass', 'paper', 'can'];
 function Recycle(props) {
-    const [type, setType] = useState("");
+    const [type, setType] = useState('');
+    const [binId, setBinId] = useState('');
+    const [bin, setBin] = useState({});
+    const [searchParam, setSearchParams] = useSearchParams();
+    const [loading, setLoading] = useState(false);
+    const [activity, setActivity] = useState(null);
+
+    useEffect(() => {
+        setBinId(searchParam.get('binId'));
+    }, []);
+
+    const getBinType = async () => {
+        try {
+            const respond = await RecycleBinService.getBin(binId); 
+            setBin(respond.data);
+            setType(types.includes(respond.data.type) ?
+                respond.data.type : 'other');
+        } catch (err) {
+            console.error(`get bin failed: ${err}`);
+            return;
+        }
+    }
+
+    useEffect(() => {
+        if (binId) {
+            getBinType();
+        }
+    }, [binId]);
+
+    const submitRecycle = async () => {
+        try {
+            setLoading(true);
+            const respond = await UserService.addActivity(
+                new Date().toLocaleString(), 
+                binId, 
+                type,
+                await UtilService.fetchAddress(bin.location.lat, bin.location.lng));
+            setActivity(respond.data);
+            UserService.updateCurrentUser();
+        } catch (err) {
+            console.error(err);
+            setActivity({points: 0});
+        }
+    }
 
     return (
-        <>
+        loading ? <RecycleResult proccessing={activity === null} points={activity?.points} /> : <>
             <div className={classes.cover} />
 
             <h3 className={classes.h3}>
@@ -34,7 +83,7 @@ function Recycle(props) {
                 <IoMdQrScanner style={{ verticalAlign: 'middle' }} /> Scan
             </a>
 
-            {type ? <button className={classes.next}></button> : ''}
+            {type ? <button className={classes.next} onClick={submitRecycle}></button> : ''}
         </>
     )
 }

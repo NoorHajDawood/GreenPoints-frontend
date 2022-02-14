@@ -28,7 +28,7 @@
  margin-top:90px ;
 }
 
-.settings-options span{
+.settings-options span, .settings-options a{
     background-repeat: no-repeat;
     background-size: 18px 18px;
     display: block;
@@ -36,7 +36,9 @@
     text-indent: 25px ;
     margin-left: 18px;
     margin-top: 14px;
-    line-height: 21px
+    line-height: 21px;
+    text-decoration: none;
+    color: black;
 }
 
 .settings-options .hr-line{

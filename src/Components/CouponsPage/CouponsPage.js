@@ -1,26 +1,42 @@
 import React, { useState, useEffect } from 'react';
 import CouponsList from '../CouponsList/CouponsList';
-import { VscHistory } from 'react-icons/vsc';
 import { FaRecycle } from 'react-icons/fa';
-import classes from './CouponsPage.module.css'
-import {RiCopperCoinLine} from 'react-icons/ri'
+import classes from './CouponsPage.module.css';
+import { RiCopperCoinLine } from 'react-icons/ri';
+import { HiOutlineShoppingBag } from 'react-icons/hi';
+import AuthService from '../../Services/auth.service';
+
 function CouponsPage(props) {
+    const [user, setUser] = useState(null);
+    const [coupons, setCoupons] = useState([]);
+
+    useEffect(() => {
+        setUser(AuthService.getCurrentUser());
+    }, [])
+
+    useEffect(() => {
+        setCoupons(user?.coupons ?? []);
+    }, [user]);
+
+    useEffect(() => {
+        console.log(coupons)
+    }, [coupons]);
 
     return (
         <div className={classes.container}>
             <span className={classes.title}>Here's what you've earned by saving the planet!</span>
             <div className={classes.couponsPoints}>
-                <RiCopperCoinLine className={classes.pointsIcon}/>
-                 <span> 2803</span>
-                </div>
-            <CouponsList />
-            {/* <div className={classes.couponsPage}>
-                <RiCopperCoinLine className={classes.pointIcon} />
-                <span> 2803</span>
-            </div> */}
+                <RiCopperCoinLine className={classes.pointsIcon} />
+                <span> {user?.points}</span>
+            </div>
+            <CouponsList coupons={coupons} />
             <a href="/recycle" className={classes.recycle}>
-                <span className={classes.btn}><FaRecycle size={30}/></span>
+                <span className={classes.btn}><FaRecycle size={30} /></span>
                 <span className={classes.recycleSpan}>Recycle</span>
+            </a>
+            <a href="/couponshop" className={classes.shop}>
+                <span className={classes.shopBtn}><HiOutlineShoppingBag size={30} /></span>
+                <span className={classes.recycleSpan}>Shop</span>
             </a>
         </div>
     )
