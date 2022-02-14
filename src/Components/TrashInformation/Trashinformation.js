@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './TrashInformation.css';
-const axios = require('axios');
-
-const GEOCODE_API_KEY = 'ba5dcb074bff4418b611a6498727f73a';
+import UtilService from '../../Services/util.service';
 
 const green = 'rgba(13,121,9,1)';
 const red = 'rgba(121,31,9,1)';
@@ -12,28 +10,14 @@ function TrashInformation(props) {
     const [address, setAddress] = useState('');
     const [percentCapacity, setPercentCapacity] = useState('');
 
-    async function fetchAddress(lat, lng) {
-        const requestOptions = {
-            method: 'GET',
-        };
-        try {
-            const response = await fetch(`https://api.geoapify.com/v1/geocode/reverse?lat=${lat}&lon=${lng}&apiKey=${GEOCODE_API_KEY}`, requestOptions);
-            const result = (await response.json()).features[0].properties;
-            return `${result.address_line1}, ${result.city}`
-        } catch (error) {
-            console.log('error', error)
-        }
-        return '';
-    }
-
     const getAddress = async (lat, lng) => {
-        const result = await fetchAddress(lat, lng);
+        const result = await UtilService.fetchAddress(lat, lng);
         setAddress(result);
     }
 
     useEffect(() => {
         getAddress(props.bin.location.lat, props.bin.location.lng);
-        setPercentCapacity((props.bin.currentCapacity / props.bin.maxCapacity) * 100)
+        setPercentCapacity(parseInt((props.bin.currentCapacity / props.bin.maxCapacity) * 100))
     }, [props]);
 
     return (

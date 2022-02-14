@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import './App.css';
 import { Map } from '../Map';
@@ -9,14 +9,14 @@ import Signup from '../Signup/Signup';
 import Settings from '../Settings/settings';
 import History from '../History/history';
 import CouponsPage from '../CouponsPage/CouponsPage';
+import CouponShop from '../CouponShop/CouponShop';
 import HeaderPage from '../HeaderPages/headerpage';
+import AdminDashboard from '../AdminDashboard/AdminDashboard';
 
 function App() {
-  const [pageTitle, setPageTitle] = useState('');
-  const [prevPage, setPrevPage] = useState('');
-
   return (
     <div className="App">
+
       <BrowserRouter>
         <ReactRouter path="/" HeaderPage>
           <>
@@ -24,26 +24,32 @@ function App() {
             <a id='recycling-button' href='/couponspage' />
           </>
         </ReactRouter>
-        <ReactRouter path="/qrscanner" HeaderPage title={'Qr Scanner'} prev={'/'}>
+        <ReactRouter path="/qrscanner" HeaderPage title={'Qr Scanner'} prev>
           <QrScanner />
         </ReactRouter>
-        <ReactRouter path="/recycle" HeaderPage title={'Recycle'} prev={'/'}>
+        <ReactRouter path="/recycle" HeaderPage title={'Recycle'} prev>
           <Recycle />
         </ReactRouter>
-        <ReactRouter path="/login">
+        <ReactRouter path="/login" >
           <Login />
         </ReactRouter>
-        <ReactRouter path="/settings" HeaderPage title={'Settings'} prev={'/'}>
+        <ReactRouter path="/settings" HeaderPage title={'Settings'} prev>
           <Settings />
         </ReactRouter>
         <ReactRouter path="/signup" >
           <Signup />
         </ReactRouter>
-        <ReactRouter path="/history" HeaderPage title={'History'} prev={'/'}>
+        <ReactRouter path="/history" HeaderPage title={'History'} prev>
           <History />
         </ReactRouter>
-        <ReactRouter path="/couponspage" HeaderPage title={'Coupons'} prev={'/'}>
+        <ReactRouter path="/couponspage" HeaderPage title={'Coupons'} prev>
           <CouponsPage />
+        </ReactRouter>
+        <ReactRouter path="/couponshop" HeaderPage title={'Coupon Shop'} prev>
+          <CouponShop />
+        </ReactRouter>
+        <ReactRouter path="/admindashboard" HeaderPage title={'Admin Dashboard'} prev>
+          <AdminDashboard />
         </ReactRouter>
       </BrowserRouter>
 
@@ -56,7 +62,7 @@ function ReactRouter(props) {
     <Routes>
       <Route exact path={props.path} element={
         <>
-          {props.HeaderPage ? <HeaderPage title={props.title} prev={props.prev} /> : ''}
+          {props.HeaderPage ? <HeaderPage className='show-hide-header' title={props.title} prev={props.prev} /> : ''}
           {props.children}
         </>
       } />

@@ -1,9 +1,12 @@
 import React from 'react';
 import './settings.css';
 import HeaderPage from '../HeaderPages/headerpage';
+import AuthService from '../../Services/auth.service';
 
 function Settings(props) {
-
+    const logOut = () => {
+        AuthService.logout();
+    }
     return (
         <>
             <div className='setiings'>
@@ -17,9 +20,11 @@ function Settings(props) {
                     <div className='hr-line' />
                     <span id='privacy-icon'>Privacy</span>
                     <div className='hr-line' />
-                    <span id='support-icon'>{`Help & Support`}</span>
+                    <span id='support-icon'>Help & Support</span>
                     <div className='hr-line' />
-                    <span id='log-out-icon'>Log Out</span>
+                    <a href='/login' id='log-out-icon' onClick={logOut}>
+                        Logout
+                    </a>
                 </div>
             </div>
         </>

@@ -6,6 +6,7 @@ import { MdLocationPin } from 'react-icons/md';
 import classes from './Map.module.css';
 import Popup from 'reactjs-popup';
 import TrashInformation from '../TrashInformation/Trashinformation';
+import RecycleBinService from '../../Services/recycleBin.service';
 
 const containerStyle = {
     width: '100vw',
@@ -24,7 +25,7 @@ const options = {
 function Map(props) {
     const [map, setMap] = useState(null);
     const [pos, setPos] = useState({ lat: 32.089433, lng: 34.80363 });
-    const [zoom, setZoom] = useState(19);
+    const [zoom, setZoom] = useState(17);
     const [bins, setBins] = useState([]);
     const [markers, setMarkers] = useState(null);
     const [currentBin, setCurrentBin] = useState({});
@@ -44,9 +45,10 @@ function Map(props) {
     const loadBins = async () => {
         let result;
         try {
-            result = await axios.get(`https://greenpoints-server.herokuapp.com/api/recycleBins`);
+            result = await RecycleBinService.getBins();
         } catch (err) {
-            console.log(err);
+            console.log(`${err}`);
+            return;
         }
         setBins(result.data);
     };
@@ -78,6 +80,7 @@ function Map(props) {
     useEffect(() => {
         if (map) {
             map.panTo(pos)
+            setZoom(16);
             setZoom(17);
         }
     }, [pos, map])
@@ -91,6 +94,7 @@ function Map(props) {
                 icon={require(`../../Images/icons/${bin.type}-bin.png`)}
             />
         }))
+        setZoom(16);
         setZoom(17);
     }, [bins]);
 

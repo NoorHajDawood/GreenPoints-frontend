@@ -4,12 +4,12 @@ function HistoryItem(props) {
     return (
         <div className='history-item'>
             <div className='history-title-date'>
-                <h6>2021.5.6 13:20 (GMT+0800)</h6>
-                <h5>National Taiwan University</h5>
+                <h6>{props.date}</h6>
+                <h5 className='overflow-text' title={props.address}>{props.address}</h5>
             </div>
             <div className='points'>
                 <h6>Points (Earn)</h6>
-                <h5>59</h5>
+                <h5>{props.points}</h5>
             </div>
 
         </div>

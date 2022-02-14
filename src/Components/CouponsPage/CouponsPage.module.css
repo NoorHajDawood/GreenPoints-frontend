@@ -53,8 +53,21 @@
     font-weight: 500;
     line-height: 15px;
     color: #384742;
+    display: block;
 }
 
 .pointsIcon{
     transform: translateY(10%);
+}
+
+.shop {
+    text-decoration: none;
+    display: block;
+    position: absolute;
+    bottom: 16px;
+    right: 60px;
+}
+
+.shopBtn {
+    color: #222B28;
 }
