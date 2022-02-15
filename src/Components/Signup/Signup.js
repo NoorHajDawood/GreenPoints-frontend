@@ -82,7 +82,7 @@ function Signup(props) {
             () => {
                 setMessage('Redirecting...');
                 setTimeout(() => {
-                    navigate('/login');
+                    navigate('/');
                     window.location.reload();
                 }, 5000);
             },
