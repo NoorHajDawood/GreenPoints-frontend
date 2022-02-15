@@ -19,10 +19,6 @@ function CouponsPage(props) {
         setCoupons(user?.coupons ?? []);
     }, [user]);
 
-    useEffect(() => {
-        console.log(coupons)
-    }, [coupons]);
-
     return (
         <div className={classes.container}>
             <span className={classes.title}>Here's what you've earned by saving the planet!</span>

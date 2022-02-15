@@ -5,8 +5,8 @@ import classes from './CouponsList.module.css'
 function CouponsList(props) {
    
     const eachCoupon = () => {
-        if(!props.coupon || props.coupons.length() === 0) {
-            return 'You have no coupons';
+        if(!props.coupons || props.coupons.length === 0) {
+            return 'There is no coupons to show';
         }
         return props.coupons.map((coupon, index) => {
             return <Coupon key={index} 
