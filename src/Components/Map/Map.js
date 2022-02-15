@@ -174,6 +174,7 @@ function Map(props) {
             <Popup open={openInfo} onClose={closeInfo} modal>
                 <TrashInformation bin={currentBin} onNav={setDest} />
             </Popup>
+            
         </>
     ) : <></>
 }

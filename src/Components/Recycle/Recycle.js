@@ -6,7 +6,7 @@ import paper from '../../Images/icons/paper.svg';
 import can from '../../Images/icons/can.svg';
 import { IoMdQrScanner } from 'react-icons/io';
 import classes from './Recycle.module.css';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import RecycleBinService from '../../Services/recycleBin.service';
 import RecycleResult from '../RecycleResult/RecycleResult';
 import UserService from '../../Services/user.service';
@@ -79,9 +79,9 @@ function Recycle(props) {
                 <ItemCard type='other' width='100%' height='41px' selected={type === 'other' ? true : false} />
             </div>
 
-            <a href='/qrscanner' className={classes.a}>
+            <Link to='/qrscanner' className={classes.a}>
                 <IoMdQrScanner style={{ verticalAlign: 'middle' }} /> Scan
-            </a>
+            </Link>
 
             {type ? <button className={classes.next} onClick={submitRecycle}></button> : ''}
         </>

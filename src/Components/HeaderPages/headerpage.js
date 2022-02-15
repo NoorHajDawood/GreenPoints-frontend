@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import classes from './headerpage.module.css'
 import Popup from 'reactjs-popup';
 import Profile from '../Profile/profile';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import AuthService from '../../Services/auth.service';
 
 function HeaderPage(props) {
@@ -22,7 +22,7 @@ function HeaderPage(props) {
 
         <header className={classes.pageHeader}>
             {props.prev ? <button className={classes.pageBack} onClick={() => navigate(-1)} /> 
-            : <a href="/" id={classes.logo}></a>}
+            : <Link to="/" id={classes.logo}/>}
             {props.title ? <span className={classes.pageTitle}>{props.title}</span> : ''}
             <Popup trigger={<button className={classes.profile}></button>} modal>
                 <Profile />

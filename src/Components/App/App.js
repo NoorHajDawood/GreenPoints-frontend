@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Link, Route, Routes } from 'react-router-dom';
 import './App.css';
 import { Map } from '../Map';
 import QrScanner from '../QRScanner/qrScanner';
@@ -14,6 +14,8 @@ import HeaderPage from '../HeaderPages/headerpage';
 import AdminDashboard from '../AdminDashboard/AdminDashboard';
 
 function App() {
+  
+
   return (
     <div className="App">
 
@@ -21,7 +23,7 @@ function App() {
         <ReactRouter path="/" HeaderPage>
           <>
             <Map />
-            <a id='recycling-button' href='/couponspage' />
+            <Link id='recycling-button' to='/couponspage' />
           </>
         </ReactRouter>
         <ReactRouter path="/qrscanner" HeaderPage title={'Qr Scanner'} prev>

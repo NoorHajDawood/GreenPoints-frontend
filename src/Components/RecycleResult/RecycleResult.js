@@ -3,6 +3,7 @@ import { TiArrowBack } from 'react-icons/ti';
 import { BiCheckCircle } from 'react-icons/bi';
 import success from '../../Images/success-trash.svg'
 import classes from './RecycleResult.module.css';
+import { Link } from 'react-router-dom';
 
 function RecycleResult(props) {
 
@@ -22,7 +23,7 @@ function RecycleResult(props) {
                     </span>
                 </div>
                 <TiArrowBack size={40} />
-                <a href='/' className={classes.home}>Back to home</a>
+                <Link to='/' className={classes.home}>Back to home</Link>
             </>}
 
         </div>

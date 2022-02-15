@@ -5,7 +5,7 @@ import Form from "react-validation/build/form";
 import Input from "react-validation/build/input";
 import CheckButton from "react-validation/build/button";
 import { isEmail } from "validator";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import AuthService from '../../Services/auth.service';
 
 function Login(props) {
@@ -94,12 +94,12 @@ function Login(props) {
                         value={password}
                         onChange={(e) => handleChange(e.target.value, setPassword)}
                     />
-                    <a href='/map' className={classes.a}>Forgot Password?</a>
+                    <Link to='/map' className={classes.a}>Forgot Password?</Link>
                 </div>
                 <div>
                     <button className={classes.login}>Log In</button>
                     <span className={classes.span}>OR</span>
-                    <a href='/signup' className={classes.signup}>Sign Up</a>
+                    <Link to='/signup' className={classes.signup}>Sign Up</Link>
                 </div>
                 {message && (
                     <div className="form-group">

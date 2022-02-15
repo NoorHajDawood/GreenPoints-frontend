@@ -5,6 +5,7 @@ import classes from './CouponsPage.module.css';
 import { RiCopperCoinLine } from 'react-icons/ri';
 import { HiOutlineShoppingBag } from 'react-icons/hi';
 import AuthService from '../../Services/auth.service';
+import { Link } from 'react-router-dom';
 
 function CouponsPage(props) {
     const [user, setUser] = useState(null);
@@ -30,14 +31,14 @@ function CouponsPage(props) {
                 <span> {user?.points}</span>
             </div>
             <CouponsList coupons={coupons} />
-            <a href="/recycle" className={classes.recycle}>
+            <Link to="/recycle" className={classes.recycle}>
                 <span className={classes.btn}><FaRecycle size={30} /></span>
                 <span className={classes.recycleSpan}>Recycle</span>
-            </a>
-            <a href="/couponshop" className={classes.shop}>
+            </Link>
+            <Link to="/couponshop" className={classes.shop}>
                 <span className={classes.shopBtn}><HiOutlineShoppingBag size={30} /></span>
                 <span className={classes.recycleSpan}>Shop</span>
-            </a>
+            </Link>
         </div>
     )
 }

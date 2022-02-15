@@ -2,6 +2,7 @@ import React from 'react';
 import './settings.css';
 import HeaderPage from '../HeaderPages/headerpage';
 import AuthService from '../../Services/auth.service';
+import { Link } from 'react-router-dom';
 
 function Settings(props) {
     const logOut = () => {
@@ -22,9 +23,9 @@ function Settings(props) {
                     <div className='hr-line' />
                     <span id='support-icon'>Help & Support</span>
                     <div className='hr-line' />
-                    <a href='/login' id='log-out-icon' onClick={logOut}>
+                    <Link to='/login' id='log-out-icon' onClick={logOut}>
                         Logout
-                    </a>
+                    </Link>
                 </div>
             </div>
         </>
