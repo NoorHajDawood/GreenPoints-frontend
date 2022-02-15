@@ -94,7 +94,6 @@ function Login(props) {
                         value={password}
                         onChange={(e) => handleChange(e.target.value, setPassword)}
                     />
-                    <Link to='/map' className={classes.a}>Forgot Password?</Link>
                 </div>
                 <div>
                     <button className={classes.login}>Log In</button>
