@@ -3,8 +3,11 @@ import Coupon from '../Coupon/Coupon';
 import classes from './CouponsList.module.css'
 
 function CouponsList(props) {
-
+   
     const eachCoupon = () => {
+        if(!props.coupon || props.coupons.length() === 0) {
+            return 'You have no coupons';
+        }
         return props.coupons.map((coupon, index) => {
             return <Coupon key={index} 
                 name={coupon.name} 
