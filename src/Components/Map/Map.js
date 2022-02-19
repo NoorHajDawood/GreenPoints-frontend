@@ -80,8 +80,6 @@ function Map(props) {
 
 
     const onLoad = useCallback(function callback(map) {
-        const bounds = new window.google.maps.LatLngBounds();
-        map.fitBounds(bounds);
         setMap(map)
     }, [])
 
@@ -96,7 +94,6 @@ function Map(props) {
     useEffect(() => {
         if (map) {
             map.panTo(origin)
-            setZoom(16);
             setZoom(17);
         }
     }, [origin, map])
@@ -110,7 +107,6 @@ function Map(props) {
                 icon={require(`../../Images/icons/${bin.type}-bin.png`)}
             />
         }))
-        setZoom(16);
         setZoom(17);
     }, [bins]);
 
@@ -133,8 +129,6 @@ function Map(props) {
                 mapContainerStyle={containerStyle}
                 center={origin}
                 zoom={zoom}
-                onLoad={onLoad}
-                onUnmount={onUnmount}
                 options={options}
             >
 
